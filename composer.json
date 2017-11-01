@@ -13,7 +13,7 @@
         "classmap": [],
         "files": [],
         "psr-4": {
-            "Asdozzz\\Traits": "src/"
+            "Asdozzz\\Traits\\": "src/"
         }
     }
 }
