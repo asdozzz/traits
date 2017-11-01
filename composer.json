@@ -1,0 +1,19 @@
+{
+    "name": "asdozzz/trait",
+    "description": "desc",
+    "authors": [
+        {
+            "name": "asdozzz",
+            "email": "asdozzz89@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "classmap": [],
+        "files": [],
+        "psr-4": {
+            "Asdozzz\\Traits": "src/"
+        }
+    }
+}
