@@ -81,8 +81,9 @@ trait Model
         $new_data = $this->clearDataBeforeSave($form['columns'],$new_data);
        
         $result = $this->datasource->update($input['data']['row_id'],$new_data);
+        $read = $this->datasource->read($input['data']['row_id']);
 
-        return ['success' => true, 'result' => $result];
+        return ['success' => true, 'result' => $read];
 	}
 
 	public function read($id)
