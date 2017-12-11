@@ -30,6 +30,8 @@ trait Model
 
 		$form = $this->forms['create'];
 
+        $input['data'] = $this->beforeCreate($input['data']);
+
         $new_data = $this->setDefaultValue($form['columns'],$input['data']);
        
         $rules = $this->getValidationRulesByConfig($form['columns'],$new_data);
@@ -50,6 +52,11 @@ trait Model
         return ['success' => true, 'result' => $read];
 	}
 
+    public function beforeCreate($input = array())
+    {
+        return $input;
+    }
+
 	public function update($input)
 	{
         if (empty($input) || empty($input['data']))
@@ -63,6 +70,8 @@ trait Model
         }
 
 		$form = $this->forms['edit'];
+
+        $input['data'] = $this->beforeUpdate($input['data']);
 
         //$input['data'][$this->primary_key] = $input['row_id'];
 
@@ -85,6 +94,11 @@ trait Model
 
         return ['success' => true, 'result' => $read];
 	}
+
+    public function beforeUpdate($input = array())
+    {
+        return $input;
+    }
 
 	public function read($id)
 	{
