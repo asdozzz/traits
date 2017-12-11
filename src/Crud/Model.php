@@ -74,7 +74,7 @@ trait Model
 
         if (!empty($errors))
         {
-            return ['success' => false, 'errors' => $errors];
+            throw new \Exception($errors[0]);
         }
 
         $new_data = $this->convertationData($form['columns'],$new_data);
