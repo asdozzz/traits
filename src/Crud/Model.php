@@ -282,6 +282,17 @@ trait Model
         return $response;
     }
 
+    function getAll($input)
+    {
+        $datatablesSchema = !empty($input['datatablesSchema'])?$input['datatablesSchema']:'default';
+
+        $schema = $this->getConfig($datatablesSchema);
+
+        $response = $this->datasource->getAll($schema,$input);
+
+        return $response;
+    }
+
     function getConfig($schemaName = 'default')
     {
         $config = $this->datatables[$schemaName];

@@ -53,10 +53,11 @@ trait Controller
     function show($id)
     {
         $input = \Request::all();
-       /* if (!$this->business->hasPermission('read'))
+
+        if (!$this->business->hasPermission('read'))
         {
             throw new \Exception(\Lang::get($this->exceptions_crud['read']));
-        }*/
+        }
         
         $result = $this->business->read($id);
         return \Response::json($result);
@@ -86,6 +87,20 @@ trait Controller
 
         $result = $this->business->getDatatable($input);
         
+        return \Response::json($result);
+    }
+
+    public function all()
+    {
+        $input = \Request::all();
+
+        if (!$this->business->hasPermission('listing'))
+        {
+            throw new \Exception(\Lang::get($this->exceptions_crud['listing']));
+        }
+
+        $result = $this->business->getAll($input);
+
         return \Response::json($result);
     }
 }

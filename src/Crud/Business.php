@@ -4,6 +4,11 @@ namespace Asdozzz\Traits\Crud;
 
 trait Business
 {
+    public function getAll($input = array())
+    {
+        return $this->model->getAll($input);
+    }
+
     public function getList($input = array())
     {
         return $this->model->getList($input);
