@@ -64,7 +64,7 @@ trait Model
             throw new \Exception(\Lang::get('vika.exceptions.model.data_not_found'));
         }
 
-        if (empty($input['data']['row_id']))
+        if (empty($input['data'][$this->essence->primary_key]))
         {
             throw new \Exception(\Lang::get('vika.exceptions.model.pk_not_found'));
         }
@@ -72,8 +72,6 @@ trait Model
 		$form = $this->forms['edit'];
 
         $input['data'] = $this->beforeUpdate($input['data']);
-
-        //$input['data'][$this->primary_key] = $input['row_id'];
 
         $new_data = $this->setDefaultValue($form['columns'],$input['data']);
        
@@ -89,8 +87,8 @@ trait Model
         $new_data = $this->convertationData($form['columns'],$new_data);
         $new_data = $this->clearDataBeforeSave($form['columns'],$new_data);
        
-        $result = $this->datasource->update($input['data']['row_id'],$new_data);
-        $read = $this->datasource->read($input['data']['row_id']);
+        $result = $this->datasource->update($input['data'][$this->essence->primary_key],$new_data);
+        $read = $this->datasource->read($input['data'][$this->essence->primary_key]);
 
         return ['success' => true, 'result' => $read];
 	}

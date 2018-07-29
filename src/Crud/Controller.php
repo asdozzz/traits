@@ -41,7 +41,7 @@ trait Controller
         }
 
         $result = $this->business->update($input);
-        
+
         if (empty($result))
         {
             throw new \Exception(\Lang::get('vika.exceptions.other'));
