@@ -103,18 +103,4 @@ trait Controller
 
         return \Response::json(['success' => true, 'result' => $result]);
     }
-
-    public function all()
-    {
-        $input = \Request::all();
-
-        if (!$this->business->hasPermission('listing'))
-        {
-            throw new \Exception(\Lang::get($this->exceptions_crud['listing']));
-        }
-
-        $result = $this->business->getAll($input);
-
-        return \Response::json($result);
-    }
 }
