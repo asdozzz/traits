@@ -28,7 +28,7 @@ trait Controller
             throw new \Exception(\Lang::get('vika.exceptions.other'));
         }
 
-        return \Response::json($result);
+        return \Response::json(['success' => true, 'result' => $result]);
     }
 
     function update()
@@ -41,25 +41,26 @@ trait Controller
         }
 
         $result = $this->business->update($input);
-        
+
         if (empty($result))
         {
             throw new \Exception(\Lang::get('vika.exceptions.other'));
         }
 
-        return \Response::json($result);
+        return \Response::json(['success' => true, 'result' => $result]);
     }
 
     function show($id)
     {
         $input = \Request::all();
-       /* if (!$this->business->hasPermission('read'))
+
+        if (!$this->business->hasPermission('read'))
         {
             throw new \Exception(\Lang::get($this->exceptions_crud['read']));
-        }*/
+        }
         
         $result = $this->business->read($id);
-        return \Response::json($result);
+        return \Response::json(['success' => true, 'result' => $result]);
     }
 
     function destroy($id)
@@ -71,7 +72,7 @@ trait Controller
         
         $result = $this->business->delete($id);
 
-        return \Response::json($result);
+        return \Response::json(['success' => true, 'result' => $result]);
     }
 
 
@@ -86,6 +87,20 @@ trait Controller
 
         $result = $this->business->getDatatable($input);
         
-        return \Response::json($result);
+        return \Response::json(['success' => true, 'result' => $result]);
+    }
+
+    public function all()
+    {
+        $input = \Request::all();
+
+        if (!$this->business->hasPermission('listing'))
+        {
+            throw new \Exception(\Lang::get($this->exceptions_crud['listing']));
+        }
+
+        $result = $this->business->getAll($input);
+
+        return \Response::json(['success' => true, 'result' => $result]);
     }
 }

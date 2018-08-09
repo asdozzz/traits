@@ -13,9 +13,9 @@ trait Model
             return false;
         }
 
-        if (!empty($this->permissions) && !empty($this->permissions[$key]))
+        if (!empty($this->essence->permissions) && !empty($this->essence->permissions[$key]))
         {
-            return $User->hasPermission($this->permissions[$key]);
+            return $User->hasPermission($this->essence->permissions[$key]);
         }
 
         return true;
@@ -28,7 +28,12 @@ trait Model
             throw new \Exception(\Lang::get('vika.exceptions.model.data_not_found'));
         }
 
-		$form = $this->forms['create'];
+		$form = $this->essence->forms['create'];
+
+        if (isset($form['columns'][$this->essence->primary_key]))
+        {
+            unset($form['columns'][$this->essence->primary_key]);
+        }
 
         $input['data'] = $this->beforeCreate($input['data']);
 
@@ -49,7 +54,7 @@ trait Model
         $id = $this->datasource->create($new_data);
         $read = $this->datasource->read($id);
 
-        return ['success' => true, 'result' => $read];
+        return $read;
 	}
 
     public function beforeCreate($input = array())
@@ -64,16 +69,14 @@ trait Model
             throw new \Exception(\Lang::get('vika.exceptions.model.data_not_found'));
         }
 
-        if (empty($input['data']['row_id']))
+        if (empty($input['data'][$this->essence->primary_key]))
         {
             throw new \Exception(\Lang::get('vika.exceptions.model.pk_not_found'));
         }
 
-		$form = $this->forms['edit'];
+		$form = $this->essence->forms['edit'];
 
         $input['data'] = $this->beforeUpdate($input['data']);
-
-        //$input['data'][$this->primary_key] = $input['row_id'];
 
         $new_data = $this->setDefaultValue($form['columns'],$input['data']);
        
@@ -89,10 +92,10 @@ trait Model
         $new_data = $this->convertationData($form['columns'],$new_data);
         $new_data = $this->clearDataBeforeSave($form['columns'],$new_data);
        
-        $result = $this->datasource->update($input['data']['row_id'],$new_data);
-        $read = $this->datasource->read($input['data']['row_id']);
+        $result = $this->datasource->update($input['data'][$this->essence->primary_key],$new_data);
+        $read = $this->datasource->read($input['data'][$this->essence->primary_key]);
 
-        return ['success' => true, 'result' => $read];
+        return $read;
 	}
 
     public function beforeUpdate($input = array())
@@ -108,7 +111,7 @@ trait Model
         }
 
 		$result = $this->datasource->read($id);
-		return ['success' => true, 'result' => $result];
+		return $result;
 	}
 
 	public function delete($id)
@@ -120,23 +123,33 @@ trait Model
                 throw new \Exception(\Lang::get('vika.exceptions.crud.delete.not_exists_deleted_field'));
             }
 
-            if (!array_key_exists($this->datasource->deleted_field, $this->columns))
+            if (!array_key_exists($this->datasource->deleted_field, $this->essence->columns))
             {
                 throw new \Exception(\Lang::get('vika.exceptions.crud.delete.not_found_deleted_field'));
             }
 
-            $value = $this->getDefaultValueForColumn($this->columns[$this->datasource->deleted_field]);
+            $value = $this->getDefaultValueForColumn($this->essence->columns[$this->datasource->deleted_field]);
 
             $new_data = [$this->datasource->deleted_field => $value];
-            $result = $this->datasource->update($id,$new_data);
+            $result = $this->updateBy([[$this->essence->primary_key,$id]],$new_data);
         }
         else
         {
-        	$result = $this->datasource->delete($id);
+            $result = $this->deleteBy([[$this->essence->primary_key,$id]]);
         }
 		
-		return ['success' => true, 'result' => $result];
+		return $result;
 	}
+
+    public function updateBy($wharr,$new_data)
+    {
+        return $this->datasource->updateByArray($wharr,$new_data);
+    }
+
+	public function deleteBy($wharr)
+    {
+        return $this->datasource->deleteByArray($wharr);
+    }
 
 	function setDefaultValue($columns,$data)
     {   
@@ -189,7 +202,7 @@ trait Model
             if (!empty($col['validation_rules']))
             {
                 $rules[$col['data']] = $col['validation_rules'];
-                $replace_pk = !empty($data) && !empty($data[$this->primary_key])?','.$data[$this->primary_key]:'';
+                $replace_pk = !empty($data) && !empty($data[$this->essence->primary_key])?','.$data[$this->essence->primary_key]:'';
                 $rules[$col['data']] = preg_replace('/{pk}/',$replace_pk, $rules[$col['data']]);
             }
         }
@@ -282,13 +295,24 @@ trait Model
         return $response;
     }
 
+    function getAll($input)
+    {
+        $datatablesSchema = !empty($input['datatablesSchema'])?$input['datatablesSchema']:'default';
+
+        $schema = $this->getConfig($datatablesSchema);
+
+        $response = $this->datasource->getAll($schema,$input);
+
+        return $response;
+    }
+
     function getConfig($schemaName = 'default')
     {
-        $config = $this->datatables[$schemaName];
+        $config = $this->essence->datatables[$schemaName];
 
         $perms = [];
 
-        $aliases = $this->permissions;
+        $aliases = $this->essence->permissions;
 
         foreach ($aliases as $alias => $perm)
         {

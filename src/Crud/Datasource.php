@@ -112,6 +112,22 @@ trait Datasource
         return $query;
     }
 
+    function getAll($schema,$input)
+    {
+        //\DB::enableQueryLog();
+        $query = \DB::table($this->table);
+
+        $query = $this->extendSoftDelete($query);
+
+        $query = $this->addSelectedColumnByScheme($query,$schema);
+        $query = $this->addFilterColumnByData($query,$schema,$input);
+        $query = $this->setOrderByData($query,$schema,$input);
+
+        $result = $query->get();
+        //dd(\DB::getQueryLog());
+        return $result;
+    }
+
     function getList($schema,$input)
     {
         //\DB::enableQueryLog();
@@ -148,7 +164,7 @@ trait Datasource
         $count = $this->getCount($schema);
         $filter_count = $this->getCount($schema,$input);
         $records = $this->getList($schema,$input);
-        
+
         $response = [
             'recordsTotal' => $count,
             "recordsFiltered" =>  $filter_count,
