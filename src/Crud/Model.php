@@ -2,8 +2,17 @@
 
 namespace Asdozzz\Traits\Crud;
 
+/**
+ * Class Model
+ *
+ * @package Asdozzz\Traits\Crud
+ */
 trait Model
 {
+    /**
+     * @param $key
+     * @return bool
+     */
     function hasPermission($key)
     {
         $User = \Auth::user();
@@ -20,8 +29,13 @@ trait Model
 
         return true;
     }
-	
-	public function create($input = array())
+
+    /**
+     * @param array $input
+     * @return mixed
+     * @throws \Exception
+     */
+    public function create($input = array())
 	{
         if (empty($input) || empty($input['data']))
         {
@@ -57,12 +71,21 @@ trait Model
         return $read;
 	}
 
+    /**
+     * @param array $input
+     * @return array
+     */
     public function beforeCreate($input = array())
     {
         return $input;
     }
 
-	public function update($input)
+    /**
+     * @param $input
+     * @return mixed
+     * @throws \Exception
+     */
+    public function update($input)
 	{
         if (empty($input) || empty($input['data']))
         {
@@ -98,12 +121,21 @@ trait Model
         return $read;
 	}
 
+    /**
+     * @param array $input
+     * @return array
+     */
     public function beforeUpdate($input = array())
     {
         return $input;
     }
 
-	public function read($id)
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Exception
+     */
+    public function read($id)
 	{
         if (empty($id))
         {
@@ -114,7 +146,12 @@ trait Model
 		return $result;
 	}
 
-	public function delete($id)
+    /**
+     * @param $id
+     * @return mixed
+     * @throws \Exception
+     */
+    public function delete($id)
 	{
 		if (!empty($this->datasource->softDeletes))
         {
@@ -141,17 +178,31 @@ trait Model
 		return $result;
 	}
 
-    public function updateBy($wharr,$new_data)
+    /**
+     * @param $wharr
+     * @param $new_data
+     * @return mixed
+     */
+    public function updateBy($wharr, $new_data)
     {
         return $this->datasource->updateByArray($wharr,$new_data);
     }
 
-	public function deleteBy($wharr)
+    /**
+     * @param $wharr
+     * @return mixed
+     */
+    public function deleteBy($wharr)
     {
         return $this->datasource->deleteByArray($wharr);
     }
 
-	function setDefaultValue($columns,$data)
+    /**
+     * @param $columns
+     * @param $data
+     * @return mixed
+     */
+    function setDefaultValue($columns, $data)
     {   
         foreach ($columns as $key => $col) 
         {
@@ -165,7 +216,13 @@ trait Model
         return $data;
     }
 
-    function getDefaultValueForColumn($col,$data = [])
+    /**
+     * @param       $col
+     * @param array $data
+     * @return bool|float|int|mixed|string
+     * @throws \Exception
+     */
+    function getDefaultValueForColumn($col, $data = [])
     {
         
 
@@ -192,7 +249,12 @@ trait Model
         }
     }
 
-    function getValidationRulesByConfig($columns,$data)
+    /**
+     * @param $columns
+     * @param $data
+     * @return array
+     */
+    function getValidationRulesByConfig($columns, $data)
     {
         $rules = array();
 
@@ -210,7 +272,12 @@ trait Model
         return $rules;
     }
 
-    function validationByRules($data,$rules)
+    /**
+     * @param $data
+     * @param $rules
+     * @return array
+     */
+    function validationByRules($data, $rules)
     {
         $errors = [];
         $validator = \Validator::make($data, $rules);
@@ -223,7 +290,12 @@ trait Model
         return $errors;
     }
 
-    function convertationData($columns,$data)
+    /**
+     * @param $columns
+     * @param $data
+     * @return mixed
+     */
+    function convertationData($columns, $data)
     {
         foreach ($columns as $key => $col) 
         {
@@ -238,7 +310,12 @@ trait Model
         return $data;
     }
 
-    function getConvertValueForColumn($col,$value)
+    /**
+     * @param $col
+     * @param $value
+     * @return mixed
+     */
+    function getConvertValueForColumn($col, $value)
     {
         if (empty($col['convertation_rules'])) return $value;
 
@@ -250,7 +327,12 @@ trait Model
         return $value;
     }
 
-    function clearDataBeforeSave($columns,$data)
+    /**
+     * @param $columns
+     * @param $data
+     * @return array
+     */
+    function clearDataBeforeSave($columns, $data)
     {
         $new_data = [];
 
@@ -274,6 +356,10 @@ trait Model
         return $new_data;
     }
 
+    /**
+     * @param $input
+     * @return mixed
+     */
     function getDatatable($input)
     {
         $datatablesSchema = !empty($input['datatablesSchema'])?$input['datatablesSchema']:'default';
@@ -284,6 +370,10 @@ trait Model
         return $response;
     }
 
+    /**
+     * @param $input
+     * @return mixed
+     */
     function getList($input)
     {
         $datatablesSchema = !empty($input['datatablesSchema'])?$input['datatablesSchema']:'default';
@@ -295,6 +385,10 @@ trait Model
         return $response;
     }
 
+    /**
+     * @param $input
+     * @return mixed
+     */
     function getAll($input)
     {
         $datatablesSchema = !empty($input['datatablesSchema'])?$input['datatablesSchema']:'default';
@@ -306,6 +400,10 @@ trait Model
         return $response;
     }
 
+    /**
+     * @param string $schemaName
+     * @return mixed
+     */
     function getConfig($schemaName = 'default')
     {
         $config = $this->essence->datatables[$schemaName];
